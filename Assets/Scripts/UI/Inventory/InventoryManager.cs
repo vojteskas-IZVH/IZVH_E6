@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
+using Unity.VisualScripting;
 
 /// <summary> Primary user interface manager. </summary>
 public class InventoryManager : MonoBehaviour
@@ -153,8 +154,9 @@ public class InventoryManager : MonoBehaviour
          * this is that whenever we press the button, CreateItem() will
          * be called.
          */
-        
-        
+
+        mItemCreateButton = itemDetails.Q<Button>("ItemDetailButtonCreate");
+        mItemCreateButton.clicked += () => CreateItem();
         
         
         await UniTask.WaitForEndOfFrame();
@@ -356,9 +358,19 @@ public class InventoryManager : MonoBehaviour
         
         if (item == null)
         { // We have no item selected -> Provide some default information.
+            mItemDetailName.text = ""; 
+            mItemDetailDescription.text = "Select an item to view its details.";
+            mItemDetailName.text = "";
+            
+            if (!mItemCreateButton.IsUnityNull()) mItemCreateButton.SetEnabled(false);
         }
         else
         { // We have item selected -> Use the item information.
+            mItemDetailName.text = item.definition.readableName;
+            mItemDetailDescription.text = item.definition.readableDescription;
+            mItemDetailCost.text = item.definition.cost.ToString();
+            
+            mItemCreateButton.SetEnabled( availableCurrency > item.definition.cost ? true : false );
         }
         
         selectedItem = item;
@@ -391,9 +403,17 @@ public class InventoryManager : MonoBehaviour
          * it from the cost (itemDefinition.cost) from availableCurrency property.
          * These items are not cheap to make!
          */
+
+        if (selectedItem.IsUnityNull()) return false;
         
-        var itemDefinition = selectedItem?.definition;
-        
+        var itemDefinition = selectedItem.definition;
+
+        if (availableCurrency > itemDefinition.cost)
+        {
+            availableCurrency -= itemDefinition.cost;
+            Instantiate(itemDefinition.prefab, createDestination.transform);
+        }
+
         return false;
     }
 }
