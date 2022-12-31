@@ -127,7 +127,7 @@ public class DebugMenuUI : MonoBehaviour
                  * This defined a new label with the text "Currency: " with a fixed width.
                  *
                  * Then, lets look at a different way of working with data-binding in IMGUI.
-                 * This time, we will create a temporaly variable to hold the value: 
+                 * This time, we will create a temporary variable to hold the value: 
                     var currency = InventoryManager.Instance.availableCurrency;
                  * and then, representing it using a HorizontalSlider: 
                     currency = (int) GUILayout.HorizontalSlider(currency, 0.0f, 1000.0f, 
@@ -138,10 +138,17 @@ public class DebugMenuUI : MonoBehaviour
                     { InventoryManager.Instance.availableCurrency = currency; }
                  */
                 
-                
-                
-                
-                
+                GUILayout.BeginHorizontal();
+                {
+                    GUILayout.Label("Currency: ", GUILayout.Width(WINDOW_DIMENSION.x / 4.0f));
+                    var currency = InventoryManager.Instance.availableCurrency;
+                    currency = (int) GUILayout.HorizontalSlider(currency, 0.0f, 1000.0f, 
+                        GUILayout.ExpandWidth(true));
+                    if (GUI.changed)
+                    { InventoryManager.Instance.availableCurrency = currency; }
+                }
+                GUILayout.EndHorizontal();
+
                 /*
                  * Task 3c: The Tool
                  *
@@ -184,7 +191,7 @@ public class DebugMenuUI : MonoBehaviour
                      * Task 3a: The Dummy
                      *
                      * In this task, you will be enabling a hidden dummy character
-                     * to run in the scene. This can accomplished quite simply by
+                     * to run in the scene. This can be accomplished quite simply by
                      * using the GameManager.Instance.TogglePlayerCharacter() method.
                      *
                      * Integrating this with the IMGUI Chest Console is also quite easy.
@@ -194,9 +201,9 @@ public class DebugMenuUI : MonoBehaviour
                      * code into the if statement and voila!
                      */
                     if (GUILayout.Button("Enable\nDummy\nCharacter", 
-                        GUILayout.ExpandWidth(true), 
-                        GUILayout.ExpandHeight(true)))
-                    { /* Fill the code here! */ }
+                            GUILayout.ExpandWidth(true), 
+                            GUILayout.ExpandHeight(true)))
+                    { GameManager.Instance.TogglePlayerCharacter(); }
                 }
                 GUILayout.EndHorizontal();
                 // Do not forget to end each group in the correct order!
